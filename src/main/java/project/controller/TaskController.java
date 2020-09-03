@@ -1,13 +1,23 @@
 package project.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import project.dto.SearchRequest;
-import project.model.Task;
-import project.service.TaskDao;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import project.dto.FindTasksDTO;
+import project.dto.TaskDTO;
+import project.service.TaskService;
 
 import javax.websocket.server.PathParam;
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -15,31 +25,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskController {
 
-    private final TaskDao taskService;
+    private final TaskService taskService;
 
-    @PostMapping("/")
+    @PostMapping("/create")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void createTask(@RequestBody Task task) {
-        taskService.createTask(task);
+    public void createTask(@RequestBody @Validated TaskDTO task) {
+        taskService.create(task);
     }
 
     @DeleteMapping("/delete")
-    public void deleteTask(@PathParam("id") Long id) {
-        //TODO delete by id
+    public void deleteTask(@PathParam("id") BigInteger id) {
+        taskService.deleteById(id);
     }
 
-    @GetMapping("/{id}")
-    public Task getTask(@PathVariable("id") Integer id) {
-        return taskService.getById(id);
+    @PostMapping
+    public List<TaskDTO> find(@RequestBody FindTasksDTO dto) {
+        return taskService.findById(dto);
     }
 
     @GetMapping("/all")
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public List<TaskDTO> findAll() {
+        return taskService.findAll();
     }
 
-    @PostMapping("/search")
-    public List<Task> findTasks(@RequestBody SearchRequest request) {
-        return taskService.findTasks(request);
+    @PutMapping
+    public void update(List<TaskDTO> taskDTO) {
+        taskService.updateTask(taskDTO);
     }
+
 }

@@ -1,4 +1,4 @@
-package project.model;
+package project.domain;
 
 public enum Grade {
     JUNIOR,
